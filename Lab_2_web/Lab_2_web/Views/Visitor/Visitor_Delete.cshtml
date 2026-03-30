@@ -1,0 +1,120 @@
+@model Lab_2_web.Models.Visitor
+
+@{
+    ViewData["Title"] = $"Видалення відвідувача #{Model.Id}";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'DM Sans', sans-serif; background: #f7f5f2; }
+
+    .back-link {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        color: #888; text-decoration: none; font-size: 0.88rem;
+        margin-bottom: 1.5rem; transition: color 0.15s;
+    }
+    .back-link:hover { color: #333; }
+
+    .delete-hero {
+        background: linear-gradient(135deg, #3d0000 0%, #6b0a0a 100%);
+        color: white; border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 2rem;
+    }
+    .hero-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.55; margin-bottom: 0.3rem; }
+    .delete-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; margin: 0 0 0.3rem; }
+    .delete-hero p  { margin: 0; opacity: 0.65; font-size: 0.88rem; }
+
+    .warning-box {
+        background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px;
+        padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #7c5c00;
+        display: flex; align-items: flex-start; gap: 0.6rem;
+    }
+    .warning-box.danger-box {
+        background: #fff5f5; border-color: #fcc; color: #c0392b;
+    }
+
+    .info-card {
+        background: white; border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #eee;
+        padding: 1.75rem; margin-bottom: 1.5rem; opacity: 0.75;
+    }
+    .info-card-title {
+        font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
+        color: #5a9060; font-weight: 500; margin-bottom: 1rem;
+        padding-bottom: 0.75rem; border-bottom: 1px solid #edf5ed;
+    }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .detail-item .lbl { font-size: 0.75rem; color: #aaa; margin-bottom: 0.25rem; text-transform: uppercase; }
+    .detail-item .val { font-size: 0.95rem; color: #2d2d2d; font-weight: 500; }
+
+    .action-row { display: flex; gap: 1rem; align-items: center; }
+    .btn-confirm {
+        background: #c0392b; color: white; border: none;
+        padding: 0.8rem 2rem; border-radius: 8px;
+        font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.95rem;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .btn-confirm:hover { background: #96281b; }
+    .btn-cancel {
+        background: white; color: #444; border: 1px solid #ddd;
+        padding: 0.8rem 1.5rem; border-radius: 8px;
+        font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.9rem;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: #f5f5f5; }
+</style>
+
+<div class="container py-4" style="max-width: 620px;">
+    <a asp-action="Index" class="back-link">← Назад до списку</a>
+
+    <div class="delete-hero">
+        <div class="hero-label">Видалення</div>
+        <h1>🗑 Видалити відвідувача?</h1>
+        <p>Ця дія є незворотною</p>
+    </div>
+
+    @if (Model.Bookings != null && Model.Bookings.Count > 0)
+    {
+        <div class="warning-box danger-box">
+            <span>⛔</span>
+            <div>
+                У відвідувача <strong>@Model.FullName</strong> є <strong>@Model.Bookings.Count</strong> активних бронювань.
+                При видаленні всі пов'язані бронювання також будуть видалені.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="warning-box">
+            <span>⚠️</span>
+            <div>Ви збираєтесь <strong>назавжди видалити</strong> відвідувача <strong>@Model.FullName</strong>.</div>
+        </div>
+    }
+
+    <div class="info-card">
+        <div class="info-card-title">👤 Дані відвідувача, що буде видалено</div>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="lbl">ID</div>
+                <div class="val">#@Model.Id</div>
+            </div>
+            <div class="detail-item">
+                <div class="lbl">ПІБ</div>
+                <div class="val">@Model.FullName</div>
+            </div>
+            <div class="detail-item">
+                <div class="lbl">Телефон</div>
+                <div class="val">@(Model.PhoneNumber ?? "—")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-row">
+        <form asp-action="Delete" method="post" style="display:contents;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn-confirm">Так, видалити</button>
+        </form>
+        <a asp-action="Index" class="btn-cancel">Скасувати</a>
+    </div>
+</div>
