@@ -17,5 +17,8 @@ namespace Lab_2_web.Services
         public void CreateBooking(Booking booking) => _repository.Add(booking);
         public void EditBooking(Booking booking) => _repository.Update(booking);
         public void DeleteBooking(int id) => _repository.Delete(id);
+
+        public bool HasRoomConflict(int roomId, DateTime checkIn, DateTime checkOut, int? excludeId)
+            => _repository.HasConflict(roomId, checkIn, checkOut, excludeId);
     }
 }

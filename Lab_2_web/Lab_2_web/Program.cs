@@ -12,7 +12,9 @@ namespace Lab_2_web
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<Lab_2_web.Repositories.IBookingRepository, Lab_2_web.Repositories.BookingRepository>();
+            builder.Services.AddScoped<Lab_2_web.Repositories.IRoomRepository,    Lab_2_web.Repositories.RoomRepository>();
             builder.Services.AddScoped<Lab_2_web.Services.BookingService>();
+            builder.Services.AddScoped<Lab_2_web.Services.RoomService>();
 
             builder.Services.AddControllersWithViews();
 
@@ -26,9 +28,7 @@ namespace Lab_2_web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(

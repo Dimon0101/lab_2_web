@@ -2,82 +2,35 @@
 
 @{
     ViewData["Title"] = $"Редагування #{Model.Id}";
-    string visitorName  = ViewBag.VisitorName  ?? Model.Visitor?.FullName ?? "";
-    string visitorPhone = ViewBag.VisitorPhone ?? Model.Visitor?.PhoneNumber ?? "";
+    string visitorName  = ViewBag.VisitorName  ?? Model.VisitorName  ?? "";
+    string visitorPhone = ViewBag.VisitorPhone ?? Model.VisitorPhone ?? "";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
     body { font-family: 'DM Sans', sans-serif; background: #f7f5f2; }
-
-    .back-link {
-        display: inline-flex; align-items: center; gap: 0.4rem;
-        color: #888; text-decoration: none; font-size: 0.88rem;
-        margin-bottom: 1.5rem; transition: color 0.15s;
-    }
+    .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: #888; text-decoration: none; font-size: 0.88rem; margin-bottom: 1.5rem; transition: color 0.15s; }
     .back-link:hover { color: #333; }
-
-    .form-hero {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        color: white; border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 2rem;
-    }
+    .form-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white; border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 2rem; }
     .hero-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.55; margin-bottom: 0.3rem; }
     .form-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; margin: 0 0 0.3rem; }
     .form-hero p  { margin: 0; opacity: 0.6; font-size: 0.88rem; font-weight: 300; }
-
-    .form-card {
-        background: white; border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #eee;
-        padding: 2rem; margin-bottom: 1.5rem;
-    }
-    .form-section-title {
-        font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
-        color: #c0a060; font-weight: 500; margin-bottom: 1.25rem;
-        padding-bottom: 0.75rem; border-bottom: 1px solid #f0ede8;
-    }
+    .form-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #eee; padding: 2rem; margin-bottom: 1.5rem; }
+    .form-section-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c0a060; font-weight: 500; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0ede8; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-
     .field-group { display: flex; flex-direction: column; }
-    .field-group label {
-        font-size: 0.78rem; font-weight: 500; color: #555;
-        margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .field-group input,
-    .field-group select {
-        border: 1.5px solid #e5e5e5; border-radius: 8px;
-        padding: 0.65rem 0.9rem; font-family: 'DM Sans', sans-serif;
-        font-size: 0.92rem; color: #2d2d2d; background: #fafafa;
-        transition: border-color 0.2s, box-shadow 0.2s; outline: none;
-    }
-    .field-group input:focus,
-    .field-group select:focus {
-        border-color: #0f3460; box-shadow: 0 0 0 3px rgba(15,52,96,0.1); background: white;
-    }
+    .field-group label { font-size: 0.78rem; font-weight: 500; color: #555; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field-group input, .field-group select { border: 1.5px solid #e5e5e5; border-radius: 8px; padding: 0.65rem 0.9rem; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: #2d2d2d; background: #fafafa; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+    .field-group input:focus, .field-group select:focus { border-color: #0f3460; box-shadow: 0 0 0 3px rgba(15,52,96,0.1); background: white; }
     .field-error { font-size: 0.78rem; margin-top: 0.3rem; color: #e53935; }
-
-    .validation-summary {
-        background: #fff5f5; border: 1px solid #fcc; border-radius: 8px;
-        padding: 0.9rem 1.1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #c0392b;
-    }
+    .validation-summary { background: #fff5f5; border: 1px solid #fcc; border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #c0392b; }
     .validation-summary ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
-
     .form-actions { display: flex; gap: 1rem; }
-    .btn-submit {
-        background: #1a1a2e; color: white; border: none;
-        padding: 0.8rem 2rem; border-radius: 8px;
-        font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.95rem;
-        cursor: pointer; transition: all 0.2s;
-    }
+    .btn-submit { background: #1a1a2e; color: white; border: none; padding: 0.8rem 2rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
     .btn-submit:hover { background: #0f3460; transform: translateY(-1px); }
-    .btn-cancel {
-        background: white; color: #666; border: 1px solid #ddd;
-        padding: 0.8rem 1.5rem; border-radius: 8px;
-        font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.9rem;
-        text-decoration: none; transition: all 0.2s;
-    }
+    .btn-cancel { background: white; color: #666; border: 1px solid #ddd; padding: 0.8rem 1.5rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; }
     .btn-cancel:hover { background: #f5f5f5; color: #333; }
-
     @@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 </style>
 
@@ -111,9 +64,7 @@
             <div class="form-grid">
                 <div class="field-group">
                     <label for="visitorName">ПІБ відвідувача</label>
-                    <input type="text" id="visitorName" name="visitorName"
-                           value="@visitorName"
-                           placeholder="Іванов Іван Іванович" />
+                    <input type="text" id="visitorName" name="visitorName" value="@visitorName" placeholder="Іванов Іван Іванович" />
                     @if (ViewData.ModelState["visitorName"]?.Errors.Count > 0)
                     {
                         <span class="field-error">@ViewData.ModelState["visitorName"].Errors[0].ErrorMessage</span>
@@ -121,9 +72,7 @@
                 </div>
                 <div class="field-group">
                     <label for="visitorPhone">Номер телефону</label>
-                    <input type="text" id="visitorPhone" name="visitorPhone"
-                           value="@visitorPhone"
-                           placeholder="+380501234567" />
+                    <input type="text" id="visitorPhone" name="visitorPhone" value="@visitorPhone" placeholder="+380501234567" />
                     @if (ViewData.ModelState["visitorPhone"]?.Errors.Count > 0)
                     {
                         <span class="field-error">@ViewData.ModelState["visitorPhone"].Errors[0].ErrorMessage</span>
@@ -137,13 +86,11 @@
             <div class="form-grid">
                 <div class="field-group">
                     <label for="checkInDate">Дата заїзду</label>
-                    <input type="date" id="checkInDate" name="checkInDate"
-                           value="@Model.CheckInDate.ToString("yyyy-MM-dd")" />
+                    <input type="date" id="checkInDate" name="checkInDate" value="@Model.CheckInDate.ToString("yyyy-MM-dd")" />
                 </div>
                 <div class="field-group">
                     <label for="checkOutDate">Дата виїзду</label>
-                    <input type="date" id="checkOutDate" name="checkOutDate"
-                           value="@Model.CheckOutDate.ToString("yyyy-MM-dd")" />
+                    <input type="date" id="checkOutDate" name="checkOutDate" value="@Model.CheckOutDate.ToString("yyyy-MM-dd")" />
                     @if (ViewData.ModelState["checkOutDate"]?.Errors.Count > 0)
                     {
                         <span class="field-error">@ViewData.ModelState["checkOutDate"].Errors[0].ErrorMessage</span>

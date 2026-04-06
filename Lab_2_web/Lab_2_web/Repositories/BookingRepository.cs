@@ -17,7 +17,6 @@ namespace Lab_2_web.Repositories
         {
             return _context.Bookings
                 .Include(b => b.Room)
-                .Include(b => b.Visitor)
                 .ToList();
         }
 
@@ -25,7 +24,6 @@ namespace Lab_2_web.Repositories
         {
             return _context.Bookings
                 .Include(b => b.Room)
-                .Include(b => b.Visitor)
                 .FirstOrDefault(b => b.Id == id);
         }
 
@@ -49,6 +47,15 @@ namespace Lab_2_web.Repositories
                 _context.Bookings.Remove(booking);
                 _context.SaveChanges();
             }
+        }
+
+        public bool HasConflict(int roomId, DateTime checkIn, DateTime checkOut, int? excludeId)
+        {
+            return _context.Bookings.Any(b =>
+                b.RoomId == roomId &&
+                (excludeId == null || b.Id != excludeId) &&
+                b.CheckInDate < checkOut &&
+                b.CheckOutDate > checkIn);
         }
     }
 }

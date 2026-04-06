@@ -11,21 +11,11 @@
 
     .page-header {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        color: white;
-        padding: 2.5rem 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        color: white; padding: 2.5rem 2rem; border-radius: 16px;
+        margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;
     }
-    .page-header h1 {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2.2rem;
-        font-weight: 600;
-        margin: 0;
-    }
-    .page-header p { margin: 0.25rem 0 0; opacity: 0.65; font-size: 0.9rem; font-weight: 300; }
+    .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; margin: 0; }
+    .page-header p  { margin: 0.25rem 0 0; opacity: 0.65; font-size: 0.9rem; font-weight: 300; }
 
     .btn-create {
         background: #e8b86d; color: #1a1a2e; border: none;
@@ -46,17 +36,12 @@
         transition: box-shadow 0.2s, transform 0.2s; border: 1px solid #eee;
     }
     .booking-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
-
     .booking-card-body {
-        padding: 1.25rem 1.5rem;
-        display: grid;
+        padding: 1.25rem 1.5rem; display: grid;
         grid-template-columns: 0.4fr 1.5fr 1.3fr 1fr 1fr auto;
         align-items: center; gap: 1rem;
     }
-    .booking-id {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.6rem; font-weight: 600; color: #c0a060; line-height: 1;
-    }
+    .booking-id { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: #c0a060; line-height: 1; }
     .booking-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; font-weight: 500; margin-bottom: 0.2rem; }
     .booking-value { font-size: 0.95rem; color: #2d2d2d; }
     .booking-value strong { font-weight: 500; }
@@ -79,10 +64,7 @@
     .btn-edit:hover   { background: #f59e0b; color: white; }
     .btn-delete:hover { background: #ef4444; color: white; }
 
-    .empty-state {
-        text-align: center; padding: 4rem 2rem; background: white;
-        border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
+    .empty-state { text-align: center; padding: 4rem 2rem; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
     .empty-state h4 { color: #555; font-weight: 500; }
     .empty-state p  { color: #aaa; font-size: 0.9rem; }
@@ -142,30 +124,25 @@
             <div class="booking-card">
                 <div class="booking-card-body">
                     <div class="booking-id">#@booking.Id</div>
-
                     <div>
                         <div class="booking-label">Відвідувач</div>
-                        <div class="booking-value"><strong>@booking.Visitor?.FullName</strong></div>
-                        <div style="font-size:0.8rem;color:#999;">@booking.Visitor?.PhoneNumber</div>
+                        <div class="booking-value"><strong>@booking.VisitorName</strong></div>
+                        <div style="font-size:0.8rem;color:#999;">@booking.VisitorPhone</div>
                     </div>
-
                     <div>
                         <div class="booking-label">Кімната</div>
                         <div class="booking-value">🚪 <strong>@booking.Room?.RoomNumber</strong></div>
                         <div style="font-size:0.8rem;color:#999;">@booking.Room?.Capacity ос.</div>
                     </div>
-
                     <div>
                         <div class="booking-label">Заїзд</div>
                         <div class="booking-value">@booking.CheckInDate.ToString("dd.MM.yyyy")</div>
                     </div>
-
                     <div>
                         <div class="booking-label">Виїзд</div>
                         <div class="booking-value">@booking.CheckOutDate.ToString("dd.MM.yyyy")</div>
                         <span class="status-badge @badgeClass">@badgeText</span>
                     </div>
-
                     <div class="action-btns">
                         <a asp-action="Details" asp-route-id="@booking.Id" class="btn-action btn-view" title="Деталі">👁</a>
                         <a asp-action="Edit"    asp-route-id="@booking.Id" class="btn-action btn-edit" title="Редагувати">✏️</a>

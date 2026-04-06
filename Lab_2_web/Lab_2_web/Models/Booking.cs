@@ -7,6 +7,13 @@ namespace Lab_2_web.Models
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Введіть ім'я відвідувача")]
+        [Display(Name = "ПІБ відвідувача")]
+        public string VisitorName { get; set; }
+
+        [Display(Name = "Номер телефону")]
+        public string? VisitorPhone { get; set; }
+
         [Required(ErrorMessage = "Оберіть дату заїзду")]
         [DataType(DataType.Date)]
         [Display(Name = "Дата заїзду")]
@@ -16,13 +23,6 @@ namespace Lab_2_web.Models
         [DataType(DataType.Date)]
         [Display(Name = "Дата виїзду")]
         public DateTime CheckOutDate { get; set; }
-
-        [Required(ErrorMessage = "Оберіть відвідувача")]
-        [Display(Name = "Відвідувач")]
-        public int VisitorId { get; set; }
-
-        [ValidateNever]
-        public Visitor Visitor { get; set; }
 
         [Required(ErrorMessage = "Оберіть номер")]
         [Display(Name = "Номер")]

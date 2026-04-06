@@ -9,5 +9,6 @@ namespace Lab_2_web.Repositories
         void Add(Booking booking);
         void Update(Booking booking);
         void Delete(int id);
+        bool HasConflict(int roomId, DateTime checkIn, DateTime checkOut, int? excludeId);
     }
 }

@@ -1,4 +1,3 @@
-using Lab_2_web.Data;
 using Lab_2_web.Models;
 using Lab_2_web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,20 +9,19 @@ namespace Lab_2_web.Controllers
     public class BookingController : Controller
     {
         private readonly BookingService _bookingService;
-        private readonly AppDbContext _context;
+        private readonly RoomService _roomService;
 
-        public BookingController(BookingService bookingService, AppDbContext context)
+        public BookingController(BookingService bookingService, RoomService roomService)
         {
             _bookingService = bookingService;
-            _context = context;
+            _roomService    = roomService;
         }
 
         public IActionResult Index()
         {
             try
             {
-                var bookings = _bookingService.GetAllBookings();
-                return View(bookings);
+                return View(_bookingService.GetAllBookings());
             }
             catch
             {
@@ -58,7 +56,7 @@ namespace Lab_2_web.Controllers
         public IActionResult Create(string visitorName, string visitorPhone,
                                     int roomId, DateTime checkInDate, DateTime checkOutDate)
         {
-            ValidateBookingInput(visitorName, visitorPhone, roomId, checkInDate, checkOutDate);
+            ValidateInput(visitorName, visitorPhone, roomId, checkInDate, checkOutDate);
 
             if (!ModelState.IsValid)
             {
@@ -69,20 +67,19 @@ namespace Lab_2_web.Controllers
 
             try
             {
-                if (HasRoomConflict(roomId, checkInDate, checkOutDate, excludeId: null))
+                if (_bookingService.HasRoomConflict(roomId, checkInDate, checkOutDate, excludeId: null))
                 {
-                    var room = _context.Rooms.Find(roomId);
+                    var room = _roomService.GetRoomById(roomId);
                     ModelState.AddModelError("roomId", $"Кімната {room?.RoomNumber} вже заброньована на цей період.");
                     LoadRoomDropdown(roomId);
                     RestoreViewBag(visitorName, visitorPhone, checkInDate, checkOutDate);
                     return View();
                 }
 
-                var visitor = FindOrCreateVisitor(visitorName, visitorPhone);
-
                 _bookingService.CreateBooking(new Booking
                 {
-                    VisitorId    = visitor.Id,
+                    VisitorName  = visitorName.Trim(),
+                    VisitorPhone = string.IsNullOrWhiteSpace(visitorPhone) ? null : visitorPhone.Trim(),
                     RoomId       = roomId,
                     CheckInDate  = checkInDate,
                     CheckOutDate = checkOutDate
@@ -121,39 +118,38 @@ namespace Lab_2_web.Controllers
         public IActionResult Edit(int id, string visitorName, string visitorPhone,
                                    int roomId, DateTime checkInDate, DateTime checkOutDate)
         {
-            var existingBooking = _bookingService.GetBookingById(id);
-            if (existingBooking == null) return NotFound();
+            var booking = _bookingService.GetBookingById(id);
+            if (booking == null) return NotFound();
 
-            ValidateBookingInput(visitorName, visitorPhone, roomId, checkInDate, checkOutDate);
+            ValidateInput(visitorName, visitorPhone, roomId, checkInDate, checkOutDate);
 
             if (!ModelState.IsValid)
             {
                 LoadRoomDropdown(roomId);
                 ViewBag.VisitorName  = visitorName;
                 ViewBag.VisitorPhone = visitorPhone;
-                return View(existingBooking);
+                return View(booking);
             }
 
             try
             {
-                if (HasRoomConflict(roomId, checkInDate, checkOutDate, excludeId: id))
+                if (_bookingService.HasRoomConflict(roomId, checkInDate, checkOutDate, excludeId: id))
                 {
-                    var room = _context.Rooms.Find(roomId);
+                    var room = _roomService.GetRoomById(roomId);
                     ModelState.AddModelError("roomId", $"Кімната {room?.RoomNumber} вже заброньована на цей період.");
                     LoadRoomDropdown(roomId);
                     ViewBag.VisitorName  = visitorName;
                     ViewBag.VisitorPhone = visitorPhone;
-                    return View(existingBooking);
+                    return View(booking);
                 }
 
-                var visitor = FindOrCreateVisitor(visitorName, visitorPhone);
+                booking.VisitorName  = visitorName.Trim();
+                booking.VisitorPhone = string.IsNullOrWhiteSpace(visitorPhone) ? null : visitorPhone.Trim();
+                booking.RoomId       = roomId;
+                booking.CheckInDate  = checkInDate;
+                booking.CheckOutDate = checkOutDate;
 
-                existingBooking.VisitorId    = visitor.Id;
-                existingBooking.RoomId       = roomId;
-                existingBooking.CheckInDate  = checkInDate;
-                existingBooking.CheckOutDate = checkOutDate;
-
-                _bookingService.EditBooking(existingBooking);
+                _bookingService.EditBooking(booking);
                 TempData["Success"] = "Бронювання успішно оновлено";
                 return RedirectToAction(nameof(Index));
             }
@@ -163,7 +159,7 @@ namespace Lab_2_web.Controllers
                 LoadRoomDropdown(roomId);
                 ViewBag.VisitorName  = visitorName;
                 ViewBag.VisitorPhone = visitorPhone;
-                return View(existingBooking);
+                return View(booking);
             }
         }
 
@@ -202,8 +198,8 @@ namespace Lab_2_web.Controllers
         private static readonly Regex PhoneRegex =
             new Regex(@"^\+?[0-9\s\-\(\)]{7,15}$", RegexOptions.Compiled);
 
-        private void ValidateBookingInput(string visitorName, string visitorPhone,
-                                          int roomId, DateTime checkIn, DateTime checkOut)
+        private void ValidateInput(string visitorName, string visitorPhone,
+                                   int roomId, DateTime checkIn, DateTime checkOut)
         {
             if (string.IsNullOrWhiteSpace(visitorName))
                 ModelState.AddModelError("visitorName", "Введіть ім'я відвідувача");
@@ -218,39 +214,10 @@ namespace Lab_2_web.Controllers
                 ModelState.AddModelError("checkOutDate", "Дата виїзду має бути пізніше дати заїзду");
         }
 
-        private bool HasRoomConflict(int roomId, DateTime checkIn, DateTime checkOut, int? excludeId)
-        {
-            return _context.Bookings.Any(b =>
-                b.RoomId == roomId &&
-                (excludeId == null || b.Id != excludeId) &&
-                b.CheckInDate < checkOut &&
-                b.CheckOutDate > checkIn);
-        }
-
-        private Visitor FindOrCreateVisitor(string name, string phone)
-        {
-            var visitor = _context.Visitors
-                .FirstOrDefault(v => v.FullName.ToLower() == name.Trim().ToLower());
-
-            if (visitor == null)
-            {
-                visitor = new Visitor
-                {
-                    FullName    = name.Trim(),
-                    PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim()
-                };
-                _context.Visitors.Add(visitor);
-                _context.SaveChanges();
-            }
-
-            return visitor;
-        }
-
         private void LoadRoomDropdown(int selectedId = 0)
         {
             ViewBag.Rooms = new SelectList(
-                _context.Rooms.OrderBy(r => r.RoomNumber),
-                "Id", "RoomNumber", selectedId);
+                _roomService.GetAllRooms(), "Id", "RoomNumber", selectedId);
         }
 
         private void RestoreViewBag(string visitorName, string visitorPhone,
